@@ -1,4 +1,5 @@
 package gui;
+
 import java.awt.EventQueue;
 
 import javax.swing.ImageIcon;
@@ -19,15 +20,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.awt.BorderLayout;
+
+
 
 public class StartWindow {
 	
@@ -45,6 +51,9 @@ public class StartWindow {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		System.out.println("VirtualSense DSP Programmer version: " + WindowMenu.APPVERSION + " (firmware version: " + WindowMenu.BOOTIMGVERSION + ")");
+		System.out.println("For use external bootimg.bin, create file named 'boot.path' in the same folder of jar file.\nThis file must be contain only the absolute path of file.");
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -252,140 +261,148 @@ public class StartWindow {
 				int numDevice = menuTabbed.getDeviceMenu().getNumberDev();
 				boolean nextDev = false;
 				
-				
-				
-				JOptionPane.showMessageDialog(frmLcrSetup,
-						  					  "\n  INFO\n  For configure VirtualSense DSP recorder:\n\n" + 
-				  							  "  - Insert please the recorder SD card on PC and click OK.             \n" +
-				  							  "  - Select the path of SD card to be configured on\n    directory chooser.\n\n" +
-				  							  "  The selected SD card will be set up with current recording\n  session.\n\n\n",
-				  							  "Configure recorder:", JOptionPane.INFORMATION_MESSAGE,
-				  							  //new ImageIcon("img/sd.png"));
-				  							  new ImageIcon(this.getClass().getResource("sd.png")));
-				
-				// For each recorder selected
-				do {
-					JFileChooser chooser = new JFileChooser();
+				try {
+					System.out.println("URI sd: " + this.getClass().getResource("/sd.png"));
 					
-			        chooser.setSelectedFile(new File("scheduler.bin"));
-			        chooser.setDialogTitle("Open SD card (recorder ID: " + recorderId + ")");
-			        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			        
-			        int returnVal = chooser.showOpenDialog(frmLcrSetup);
-			        if(returnVal == JFileChooser.APPROVE_OPTION) {
-			        	String currentDir = chooser.getSelectedFile().getAbsolutePath();
-			            try {
-			            	System.out.println("path: " + currentDir);
-			            	// Check if there are boot.bin or scheduler.bin and remove it
-			            	File boot = new File(currentDir + "/bootimg.bin");
-			            	File scheduler = new File(currentDir + "/scheduler.bin");
-			            	System.out.println("file bootimg.bin " + (Files.deleteIfExists(boot.toPath())?"exists and deleted":"do not exists"));
-			            	System.out.println("file scheduler.bin " + (Files.deleteIfExists(scheduler.toPath())?"exists and deleted":"do not exists"));
-			        	
-			            	System.out.println("URI: " + this.getClass().getResource("bootimg.bin"));
-			            	
-			            	// Copy bootimg.bin from project folder: /bootimg/bootimg.bin
-			            	//Files.copy(new File("bootimg/bootimg.bin").toPath(), boot.toPath());
-			            	Files.copy(this.getClass().getResource("bootimg.bin").openStream(),
-			            			   boot.toPath());
-			            	System.out.println("file bootimg.bin added");
-			            			
-			            	
-			            	
-			                FileOutputStream out = new FileOutputStream(scheduler);
-			                
-			                // write program counter and id
-			                String head = "";
-			                head+=Record.swapBytes(String.format("%04X ", 1).toUpperCase());			// Program counter
-			                head+=Record.swapBytes(String.format("%04X ", recorderId).toUpperCase());	// Device id
-			                
-			                System.out.println("Start write hex file! (head: " + head + ")");
-			                String hexhead = head.replaceAll("\\s+","");
-				            // Write bites on file
-							for(int t = 0; t < hexhead.length()-1; t+=2){
-			                    byte b = Byte.decode("0x"+hexhead.substring(t, t+2));
-			                    System.out.println("Parsing: "+hexhead.substring(t, t+2));
-			                    out.write(b);
-				            }
-				            out.flush();
-			                
-			                // Get record sessions
-		                	ArrayList<RecordSession> sessions = menuTabbed.getTimerMenu().getSessions();
-							
-		                	// get hexadecimal format of each session of sessions
-							for(int i=0; i<sessions.size(); i++) {
-								String[] hexSes = sessions.get(i).toHexStrings();
-								System.out.println("Record session: " + i + " (" + sessions.size() + ")");
+					JOptionPane.showMessageDialog(frmLcrSetup,
+							  					  "\n  INFO\n  For configure VirtualSense DSP recorder:\n\n" + 
+					  							  "  - Insert please the recorder SD card on PC and click OK.             \n" +
+					  							  "  - Select the path of SD card to be configured on\n    directory chooser.\n\n" +
+					  							  "  The selected SD card will be set up with current recording\n  session.\n\n\n",
+					  							  "Configure recorder:", JOptionPane.INFORMATION_MESSAGE,
+					  							  //new ImageIcon("img/sd.png"));
+					  							  new ImageIcon(this.getClass().getResource("/sd.png")));
+					
+					// For each recorder selected
+					do {
+						JFileChooser chooser = new JFileChooser();
+						
+				        //chooser.setSelectedFile(new File("scheduler.bin"));
+				        chooser.setDialogTitle("Open SD card (recorder ID: " + recorderId + ")");
+				        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				        
+				        int returnVal = chooser.showOpenDialog(frmLcrSetup);
+				        if(returnVal == JFileChooser.APPROVE_OPTION) {
+				        	String currentDir = chooser.getSelectedFile().getAbsolutePath();
+				            try {
+				            	System.out.println("path boot: " + currentDir);
+				            	// Check if there are boot.bin or scheduler.bin and remove it
+				            	File boot = new File(currentDir + "/bootimg.bin");
+				            	File scheduler = new File(currentDir + "/scheduler.bin");
+				            	File datetime = new File(currentDir + "/updatetime.bin");
+				            	System.out.println("file bootimg.bin " + (Files.deleteIfExists(boot.toPath())?"exists and deleted":"do not exists"));
+				            	System.out.println("file scheduler.bin " + (Files.deleteIfExists(scheduler.toPath())?"exists and deleted":"do not exists"));
+				            	System.out.println("file updatetime.bin " + (Files.deleteIfExists(datetime.toPath())?"exists and deleted":"do not exists"));
+				            	
+				            	/*System.out.println("URI: " + this.getClass().getResource("/bootimg.bin"));
+				            	
+				            	// Copy bootimg.bin from project folder: /bootimg/bootimg.bin
+				            	//Files.copy(new File("bootimg/bootimg.bin").toPath(), boot.toPath());
+				            	Files.copy(this.getClass().getResource("/bootimg.bin").openStream(),
+				            			   boot.toPath());
+				            	System.out.println("file bootimg.bin added");*/
+				            	
+				            	// Check if exist boot.pat
+				            	Files.copy(getBootStream(),
+				            			   boot.toPath());
+				            	System.out.println("file bootimg.bin added");		
+				            	
+				                FileOutputStream out = new FileOutputStream(scheduler);
+				                
+				                // write program counter and id
+				                String head = "";
+				                head+=Record.swapBytes(String.format("%04X ", 1).toUpperCase());			// Program counter
+				                head+=Record.swapBytes(String.format("%04X ", recorderId).toUpperCase());	// Device id
+				                
+				                System.out.println("Start write hex file! (head: " + head + ")");
+				                String hexhead = head.replaceAll("\\s+","");
+					            // Write bites on file
+								for(int t = 0; t < hexhead.length()-1; t+=2){
+				                    byte b = Byte.decode("0x"+hexhead.substring(t, t+2));
+				                    System.out.println("Parsing: "+hexhead.substring(t, t+2));
+				                    out.write(b);
+					            }
+					            out.flush();
+				                
+				                // Get record sessions
+			                	ArrayList<RecordSession> sessions = menuTabbed.getTimerMenu().getSessions();
 								
-								// For each reord of this session
-								for(int j=0; j<hexSes.length; j++) {
+			                	// get hexadecimal format of each session of sessions
+								for(int i=0; i<sessions.size(); i++) {
+									String[] hexSes = sessions.get(i).toHexStrings();
+									System.out.println("Record session: " + i + " (" + sessions.size() + ")");
 									
-									System.out.println("String[" + j + "] " + hexSes[j]);
-									String hexBytes = hexSes[j].replaceAll("\\s+","");
-									
-									// Write bites on file
-									for(int y = 0; y < hexBytes.length()-1; y+=2){
-					                    byte b = Byte.decode("0x"+hexBytes.substring(y, y+2));
-					                    System.out.println("Parsing: "+hexBytes.substring(y, y+2));
-					                    out.write(b);
-					                }
-					                out.flush();
+									// For each reord of this session
+									for(int j=0; j<hexSes.length; j++) {
+										
+										System.out.println("String[" + j + "] " + hexSes[j]);
+										String hexBytes = hexSes[j].replaceAll("\\s+","");
+										
+										// Write bites on file
+										for(int y = 0; y < hexBytes.length()-1; y+=2){
+						                    byte b = Byte.decode("0x"+hexBytes.substring(y, y+2));
+						                    System.out.println("Parsing: "+hexBytes.substring(y, y+2));
+						                    out.write(b);
+						                }
+						                out.flush();
+									}
+									System.out.println("\n");
 								}
-								System.out.println("\n");
-							}
-			                out.close();
-		            	} catch (FileNotFoundException ex) {
-		            		java.util.logging.Logger.getLogger(StartWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		     				JOptionPane.showMessageDialog(frmLcrSetup,
-		     											  "Error 19. Refer to Log file.     ", 
-		     											  "Error on setup SD card",
-		     											  JOptionPane.ERROR_MESSAGE);
-		     				return;
-		     				
-			            } catch (IOException exx) {
-			            	java.util.logging.Logger.getLogger(StartWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, exx);
-		     				JOptionPane.showMessageDialog(frmLcrSetup,
-									  "Error 20. Refer to Log file.     ", 
-									  "Error on setup SD card",
-									  JOptionPane.ERROR_MESSAGE);
-		     				return;
-			            } /*catch (URISyntaxException exxx) {
-			            	java.util.logging.Logger.getLogger(StartWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, exxx);
-		     				JOptionPane.showMessageDialog(frmLcrSetup,
-									  "Error 21. Refer to Log file.     ", 
-									  "Error on setup SD card",
-									  JOptionPane.ERROR_MESSAGE);
-		     				return;
-						}*/
-			            
-			            // Check if there are many recorder to be setup
-				        if(numDevice > 1) {
-				        	
-				        	int n = JOptionPane.showConfirmDialog(frmLcrSetup,
-				        										  "\nSD card successfully set up! (recorder ID: " + recorderId + ")\n \nOn current session the number of device to be setup is greater than one.     \n\nDo you want setup the next one (recorder ID: " + (recorderId+1) + ")?\n",
-				        										  "Configure recorder",
-				        										  JOptionPane.YES_NO_OPTION);
-				        	if(n == 0) {
-				        		nextDev = true;
-				        		recorderId++;
-				        		numDevice--;
-				        	}
-				        	else
-				        		nextDev = false;
+				                out.close();
+			            	} catch (FileNotFoundException ex) {
+			            		java.util.logging.Logger.getLogger(StartWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			     				JOptionPane.showMessageDialog(frmLcrSetup,
+			     											  "Error 19. Refer to Log file.     ", 
+			     											  "Error on setup SD card",
+			     											  JOptionPane.ERROR_MESSAGE);
+			     				return;
+			     				
+				            } catch (IOException exx) {
+				            	java.util.logging.Logger.getLogger(StartWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, exx);
+			     				JOptionPane.showMessageDialog(frmLcrSetup,
+										  "Error 20. Refer to Log file.     ", 
+										  "Error on setup SD card",
+										  JOptionPane.ERROR_MESSAGE);
+			     				return;
+				            }
+				            
+				            // Check if there are many recorder to be setup
+					        if(numDevice > 1) {
+					        	
+					        	int n = JOptionPane.showConfirmDialog(frmLcrSetup,
+					        										  "\nSD card successfully set up! (recorder ID: " + recorderId + ")\n \nOn current session the number of device to be setup is greater than one.     \n\nDo you want setup the next one (recorder ID: " + (recorderId+1) + ")?\n",
+					        										  "Configure recorder",
+					        										  JOptionPane.YES_NO_OPTION);
+					        	if(n == 0) {
+					        		nextDev = true;
+					        		recorderId++;
+					        		numDevice--;
+					        	}
+					        	else
+					        		nextDev = false;
+					        } else {
+					        	nextDev = false;
+					        	JOptionPane.showMessageDialog(frmLcrSetup, 
+					        								  "SD card successfully set up! (recorder ID: " + recorderId + ")     ",
+					        								  "Configure recorder", 
+					        								  JOptionPane.INFORMATION_MESSAGE);
+					        }
 				        } else {
-				        	nextDev = false;
 				        	JOptionPane.showMessageDialog(frmLcrSetup, 
-				        								  "SD card successfully set up! (recorder ID: " + recorderId + ")     ",
-				        								  "Configure recorder", 
-				        								  JOptionPane.INFORMATION_MESSAGE);
-				        }
-			        } else {
-			        	JOptionPane.showMessageDialog(frmLcrSetup, 
-								  					  "Set up aborted!  ",
-								  					  "Configure recorder", 
-								  					  JOptionPane.INFORMATION_MESSAGE);
-			        }		        
-				} while(nextDev);
+									  					  "Set up aborted!  ",
+									  					  "Configure recorder", 
+									  					  JOptionPane.INFORMATION_MESSAGE);
+				        }		        
+					} while(nextDev);
+					
+				}catch (NullPointerException exxx) {
+	            	java.util.logging.Logger.getLogger(StartWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, exxx);
+     				JOptionPane.showMessageDialog(frmLcrSetup,
+							  "Error 21. Refer to Log file.     ", 
+							  "Error on setup SD card",
+							  JOptionPane.ERROR_MESSAGE);
+     				return;
+				}
 			}       
 		});
 					/*JFileChooser chooserSave = new JFileChooser();
@@ -622,6 +639,36 @@ public class StartWindow {
 		      return "Setting file";
 		    }
 		  		 
+	 }
+	 
+	 private InputStream getBootStream() throws IOException
+	 {
+		 File pathBoot = new File("boot.path");
+		 System.out.println("Search boot.path on: " + pathBoot.getAbsolutePath());
+		 
+		 InputStream retStream = null;
+		 
+		 if(pathBoot.exists()) {
+			 
+			 BufferedReader reader = new BufferedReader(new FileReader(pathBoot));
+		     
+		     File boot = new File(reader.readLine());
+		     if(boot.isFile())
+		     {
+		    	 System.out.println("External boot path exist and is a file!");
+		    	 System.out.println("URI bootimg.bin: " + boot.getAbsolutePath());
+		    	 retStream = (InputStream)(new FileInputStream(boot));
+		     }
+		 }
+		 
+		 if(retStream == null) {
+			 System.out.println("External boot path do not exist! use bootimg on jar file.");
+			 System.out.println("URI bootimg.bin: " + this.getClass().getResource("/bootimg.bin"));
+			 
+			 retStream = this.getClass().getResource("/bootimg.bin").openStream();
+		 }
+			 
+		 return retStream;
 	 }
 	 
 	 

@@ -46,13 +46,24 @@ public class RecPeriodical extends Record{
 		ret+=Record.swapBytes(String.format("%04X ", this.startRec.get(Calendar.HOUR_OF_DAY)).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", this.startRec.get(Calendar.MINUTE)).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", this.startRec.get(Calendar.SECOND)).toUpperCase());
+		
+		// WARNING!!!
 		//ret+=Record.swapBytes(String.format("%04X ", this.length).toUpperCase());							<<<< Emanuele Lattanzi vuole la durata in minuti invece che in secondi
 		
-		ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());        
-		ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());
-		ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());
-		ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());
-		ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());
+		//ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());        
+		//ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());
+		//ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());
+		//ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());
+		//ret+=Record.swapBytes(String.format("%04X ", 0).toUpperCase());									<<<< Questi campi sono intesi come Anno Mese Giorno Ore Minuti della data di fine
+		//																										 mentre i byte che dovrebbero rappresentare i secondi rappresentano i minuti di registrazione
+		
+		GregorianCalendar stopRec = this.getStop();
+		
+		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.DAY_OF_MONTH)).toUpperCase());        
+		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.MONTH)).toUpperCase());
+		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.YEAR)-2000).toUpperCase());
+		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.HOUR_OF_DAY)).toUpperCase());
+		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.MINUTE)).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", (int)this.length/60).toUpperCase());
 		
 		return ret;

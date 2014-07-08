@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="bootimg"/>
 	<classpathentry kind="src" path="img"/>
+	<classpathentry kind="src" path="bootimg"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="JCoord.jar"/>
-	<classpathentry kind="lib" path="forms-1.3.0.jar"/>
-	<classpathentry kind="lib" path="miglayout15-swing.jar"/>
+	<classpathentry exported="true" kind="lib" path="JCoord.jar"/>
+	<classpathentry exported="true" kind="lib" path="forms-1.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="miglayout15-swing.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

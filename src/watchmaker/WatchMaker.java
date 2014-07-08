@@ -1,9 +1,13 @@
 package watchmaker;
 
+import gui.StartWindow;
+import gui.WindowMenu;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.logging.Level;
 
@@ -11,6 +15,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -28,11 +33,13 @@ public class WatchMaker  extends JPanel{
 	    private JTextField yearTextField;
 	
 
+
 	/**
      * Creates new form DSPProgrammer
      */
     public WatchMaker() {
-        inito();
+    	
+    	inito();
     }
 
 
@@ -99,7 +106,8 @@ public class WatchMaker  extends JPanel{
             }
         });
 
-        createTimeFile.setText("Create time file");
+        createTimeFile.setText("Update recorder datetime");
+        createTimeFile.setEnabled(false);
         createTimeFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 createTimeFileActionPerformed(evt);
@@ -128,7 +136,7 @@ public class WatchMaker  extends JPanel{
                     	.addGap(20)
                         .addComponent(createTimeFile)
                         .addGap(18)
-                        .addComponent(programmingStringTextField1, GroupLayout.PREFERRED_SIZE, 385, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(programmingStringTextField1, GroupLayout.PREFERRED_SIZE, 310, GroupLayout.PREFERRED_SIZE))
         );
         grouplayout.setVerticalGroup(
     		grouplayout.createSequentialGroup()
@@ -204,16 +212,36 @@ public class WatchMaker  extends JPanel{
    
     
     private void saveTimeFile() {
-        JFileChooser chooser = new JFileChooser();
-        /*FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "JPG & GIF Images", "jpg", "gif");
-        chooser.setFileFilter(filter);*/
-        chooser.setSelectedFile(new File("updatetime.bin"));
-        int returnVal = chooser.showSaveDialog(this);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-           String absoluteName = chooser.getSelectedFile().getAbsolutePath();
-            try {
-                FileOutputStream out = new FileOutputStream(absoluteName);
+    	try {
+    		JFileChooser chooser = new JFileChooser();
+			
+	        //chooser.setSelectedFile(new File("scheduler.bin"));
+	        chooser.setDialogTitle("Open SD card");
+	        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	        
+	        int returnVal = chooser.showOpenDialog(this);
+	        if(returnVal == JFileChooser.APPROVE_OPTION) {
+	        	String currentDir = chooser.getSelectedFile().getAbsolutePath();
+	            
+            	System.out.println("path boot: " + currentDir);
+            	// Check if there are boot.bin or scheduler.bin and remove it
+            	File boot = new File(currentDir + "/bootimg.bin");
+            	File scheduler = new File(currentDir + "/scheduler.bin");
+            	File datetime = new File(currentDir + "/updatetime.bin");
+            	
+            	System.out.println("file bootimg.bin " + (Files.deleteIfExists(boot.toPath())?"exists and deleted":"do not exists"));
+            	System.out.println("file scheduler.bin " + (Files.deleteIfExists(scheduler.toPath())?"exists and deleted":"do not exists"));
+        	
+            	System.out.println("URI: " + this.getClass().getResource("bootimg.bin"));
+            	
+            	// Copy bootimg.bin from project folder: /bootimg/bootimg.bin
+            	//Files.copy(new File("bootimg/bootimg.bin").toPath(), boot.toPath());
+            	Files.copy(this.getClass().getResource("/bootimg.bin").openStream(),
+            			   boot.toPath());
+            	System.out.println("file bootimg.bin added");
+		
+            	
+                FileOutputStream out = new FileOutputStream(datetime);
                 String hexBytes = this.programmingStringTextField1.getText().replaceAll("\\s+","");
                 
                 for(int i = 0; i < hexBytes.length()-1; i+=2){
@@ -224,13 +252,26 @@ public class WatchMaker  extends JPanel{
                 System.out.println(this.programmingStringTextField1.getText());
                 out.flush();
                 out.close();
-            } catch (FileNotFoundException ex) {
-            	System.out.println(ex);
-            } catch (IOException exx) {
-            	System.out.println(exx);
-            }
+                
+                JOptionPane.showMessageDialog(this, 
+						  					  "SD card successfully set up!     ",
+						  					  "Update datetime", 
+						  					  JOptionPane.INFORMATION_MESSAGE);
+	        } else {
+	        	JOptionPane.showMessageDialog(this, 
+					  					  	  "update aborted!  ",
+					  					  	  "Update datetime", 
+					  					  	  JOptionPane.INFORMATION_MESSAGE);
+	        }	
+                
+        } catch (Exception ex) {
+    		java.util.logging.Logger.getLogger(StartWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			JOptionPane.showMessageDialog(this,
+										  "Error 22. Refer to Log file.     ", 
+										  "Error on update datetime",
+										  JOptionPane.ERROR_MESSAGE);
+			return;
         }
-        
     }
 
     private void generateTimeString() {
@@ -244,6 +285,8 @@ public class WatchMaker  extends JPanel{
         programmingString+=swapBytes(String.format("%04X ", Integer.parseInt(this.minTextField.getText())).toUpperCase());
         programmingString+=swapBytes(String.format("%04X ", Integer.parseInt(this.secDateTextField.getText())).toUpperCase());        
         this.programmingStringTextField1.setText(programmingString);
+        
+        createTimeFile.setEnabled(true);
     }
     
     
@@ -264,6 +307,7 @@ public class WatchMaker  extends JPanel{
         this.secDateTextField.setText(""+now.get(Calendar.SECOND));    
         generateTimeString();
     }
+    
 }
 	
 
