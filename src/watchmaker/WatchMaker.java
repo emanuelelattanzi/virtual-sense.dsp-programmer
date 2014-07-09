@@ -228,9 +228,11 @@ public class WatchMaker  extends JPanel{
             	File boot = new File(currentDir + "/bootimg.bin");
             	File scheduler = new File(currentDir + "/scheduler.bin");
             	File datetime = new File(currentDir + "/updatetime.bin");
+            	File pc = new File(currentDir + "/programcounter.bin");
             	
             	System.out.println("file bootimg.bin " + (Files.deleteIfExists(boot.toPath())?"exists and deleted":"do not exists"));
             	System.out.println("file scheduler.bin " + (Files.deleteIfExists(scheduler.toPath())?"exists and deleted":"do not exists"));
+            	System.out.println("file programcounter.bin " + (Files.deleteIfExists(pc.toPath())?"exists and deleted":"do not exists"));
         	
             	System.out.println("URI: " + this.getClass().getResource("bootimg.bin"));
             	
