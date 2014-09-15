@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 
 public class WindowMenu extends JMenuBar {
 	
-	public static final String APPVERSION = "0.0.1 Alpha - 9 july 2014";
+	public static final String APPVERSION = "0.0.1 Alpha - 15 september 2014";
 	public static final String BOOTIMGVERSION = "1.1.contiguous.advanced.scheduler-15-09-2014";
 	
 	private JMenuBar menuBar;
