@@ -17,7 +17,12 @@ public class RecPeriodical extends Record{
 	}
 	
 	public GregorianCalendar getStop() {
-		GregorianCalendar stop = this.startRec;
+		GregorianCalendar stop = new GregorianCalendar(this.startRec.get(Calendar.YEAR),
+													   this.startRec.get(Calendar.MONTH),
+													   this.startRec.get(Calendar.DAY_OF_MONTH),
+													   this.startRec.get(Calendar.HOUR_OF_DAY),
+													   this.startRec.get(Calendar.MINUTE),
+													   this.startRec.get(Calendar.SECOND));
 		stop.add(Calendar.SECOND, this.length);
 		
 		return stop;

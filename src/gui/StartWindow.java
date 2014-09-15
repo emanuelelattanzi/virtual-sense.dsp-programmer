@@ -333,12 +333,16 @@ public class StartWindow {
 			                	// get hexadecimal format of each session of sessions
 								for(int i=0; i<sessions.size(); i++) {
 									String[] hexSes = sessions.get(i).toHexStrings();
-									System.out.println("Record session: " + i + " (" + sessions.size() + ")");
+									String[] strSes = sessions.get(i).toStrings();
+									
+									
+									System.out.println("Record session: " + i + " (size: " + sessions.size() + ")");
 									
 									// For each reord of this session
 									for(int j=0; j<hexSes.length; j++) {
 										
-										System.out.println("String[" + j + "] " + hexSes[j]);
+										System.out.println("String[" + j + "] " + strSes[j]);
+										System.out.println("HexString[" + j + "] " + hexSes[j]);
 										String hexBytes = hexSes[j].replaceAll("\\s+","");
 										
 										// Write bites on file
