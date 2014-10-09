@@ -313,43 +313,47 @@ public class TimerMenu extends JPanel {
 
 		boolean b = true;
 		//int c = 0;
-		
-		switch(panelTimer3.getModePanel().getCurrentMod()) {
-		
-			case 0: {
-				// ALWAYSON
-				System.out.print("Alwayson: ");
-				RecordSession rc = new RecordSession(RecordSession.ALWAYSON, startTime, stopTime, fileLength, fs, gain, impedance);
-				sessions.add(rc);
-				logArea.add(rc.getLogRec());
-				//logArea.repaint();
-			}
-			break;
+		if(fileLength > 0){
+			switch(panelTimer3.getModePanel().getCurrentMod()) {
 			
-			case 1: {
-				// PERIODICAL
-				MyHour rec = panelTimer3.getModePanel().getRecTime().getSelectRecRange();
-				MyHour pause = panelTimer3.getModePanel().getPauseTime().getSelectRecRange();
-				
-				if((rec.getHours() + pause.getHours() + rec.getMinutes() + pause.getMinutes() + rec.getSeconds() + pause.getSeconds()) > 0) {
-				
-					System.out.print("Periodical: ");
-					System.out.println(rec.getHours() + pause.getHours() + ":" + rec.getMinutes() + pause.getMinutes() + "." + rec.getSeconds() + pause.getSeconds());
-					
-					RecordSession rl = new RecordSession(RecordSession.PERIODICAL, startTime, stopTime, fileLength, fs, gain, impedance,
-														 rec.getSeconds() + (rec.getMinutes() * 60) + ((rec.getHours()*60)*60),
-														 pause.getSeconds() + (pause.getMinutes() * 60) + ((pause.getHours()*60)*60));
-					sessions.add(rl);
-					logArea.add(rl.getLogRec());
+				case 0: {
+					// ALWAYSON
+					System.out.print("Alwayson: ");
+					RecordSession rc = new RecordSession(RecordSession.ALWAYSON, startTime, stopTime, fileLength, fs, gain, impedance);
+					sessions.add(rc);
+					logArea.add(rc.getLogRec());
 					//logArea.repaint();
-				}else {
-					b = false;
 				}
+				break;
+				
+				case 1: {
+					// PERIODICAL
+					MyHour rec = panelTimer3.getModePanel().getRecTime().getSelectRecRange();
+					MyHour pause = panelTimer3.getModePanel().getPauseTime().getSelectRecRange();
+					
+					if((rec.getHours() + pause.getHours() + rec.getMinutes() + pause.getMinutes() + rec.getSeconds() + pause.getSeconds()) > 0) {
+					
+						System.out.print("Periodical: ");
+						System.out.println(rec.getHours() + pause.getHours() + ":" + rec.getMinutes() + pause.getMinutes() + "." + rec.getSeconds() + pause.getSeconds());
+						
+						RecordSession rl = new RecordSession(RecordSession.PERIODICAL, startTime, stopTime, fileLength, fs, gain, impedance,
+															 rec.getSeconds() + (rec.getMinutes() * 60) + ((rec.getHours()*60)*60),
+															 pause.getSeconds() + (pause.getMinutes() * 60) + ((pause.getHours()*60)*60));
+						sessions.add(rl);
+						logArea.add(rl.getLogRec());
+						//logArea.repaint();
+					}else {
+						b = false;
+					}
+				}
+				break;
+			
+				default:
+				break;
 			}
-			break;
-		
-			default:
-			break;
+		}
+		else{
+			b = false;
 		}
 		/*
 		String string1 = "", string2 = "";

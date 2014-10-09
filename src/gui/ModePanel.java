@@ -170,7 +170,7 @@ public void setCurrentMod(int currentMod) {
 
 public int getFileLength()
 {
-	return (Integer)this.fileLength.getValue();
+	return this.fileLength.getFileLength();
 }
 
 }
