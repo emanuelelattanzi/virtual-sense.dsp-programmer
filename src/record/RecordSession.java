@@ -139,6 +139,11 @@ public class RecordSession {
 	public String[] toHexStrings(){
 		String[] ret = new String[this.records.size()];
 		
+		System.out.println("len senza swap: "+(String.format("%04X ", this.fileLength).toUpperCase()));
+		System.out.println("len swap: "+Record.swapBytes(String.format("%04X ", this.fileLength).toUpperCase()));
+		System.out.println("len con int: "+Integer.toHexString(this.fileLength));
+
+		
 		for(int i=0; i<this.records.size(); i++) {
 			ret[i]="";
 			ret[i]+=String.format("%02X ",this.mode+1).toUpperCase();							// Mode

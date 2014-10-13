@@ -321,6 +321,9 @@ public class StartWindow {
 				                String hexhead = head.replaceAll("\\s+","");
 					            // Write bites on file
 								for(int t = 0; t < hexhead.length()-1; t+=2){
+									//Inte("0x"+hexhead.substring(t, t+2))
+									
+									System.out.println("test: "+(Integer.parseInt(hexhead.substring(t, t+2), 16) & 0xFF));
 				                    byte b = Byte.decode("0x"+hexhead.substring(t, t+2));
 				                    System.out.println("Parsing: "+hexhead.substring(t, t+2));
 				                    out.write(b);
@@ -347,9 +350,11 @@ public class StartWindow {
 										
 										// Write bites on file
 										for(int y = 0; y < hexBytes.length()-1; y+=2){
-						                    byte b = Byte.decode("0x"+hexBytes.substring(y, y+2));
-						                    System.out.println("Parsing: "+hexBytes.substring(y, y+2));
-						                    out.write(b);
+											//System.out.println("test: "+(Short.parseShort(hexBytes.substring(y, y+2), 16) & 0xFF));
+											short toWrite = Short.parseShort(hexBytes.substring(y, y+2), 16);
+						                    //byte b = Byte.decode("0x"+hexBytes.substring(y, y+2));
+						                    System.out.println("Parsing: "+hexBytes.substring(y, y+2) + " byte:" + (toWrite & 0xFF));
+						                    out.write(toWrite & 0xFF);
 						                }
 						                out.flush();
 									}

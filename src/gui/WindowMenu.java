@@ -18,8 +18,8 @@ import javax.swing.JOptionPane;
 
 public class WindowMenu extends JMenuBar {
 	
-	public static final String APPVERSION = "0.0.1 Alpha - 9 october 2014";
-	public static final String BOOTIMGVERSION = "1.1.contiguous.advanced.scheduler-09-10-2014";
+	public static final String APPVERSION = "0.0.1 Alpha - 13 october 2014";
+	public static final String BOOTIMGVERSION = "1.1.contiguous.advanced.scheduler-13-10-2014";
 	
 	private JMenuBar menuBar;
 	private JMenu mnFile;
