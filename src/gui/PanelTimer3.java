@@ -11,6 +11,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 
@@ -122,19 +123,21 @@ public class PanelTimer3 extends JPanel {
 	public GregorianCalendar getStartTime()
 	{  	
 		GregorianCalendar startTime = new GregorianCalendar(startDay.getSelectPeriod().getYear(),
-															startDay.getSelectPeriod().getMonth(),
+															startDay.getSelectPeriod().getMonth() - 1,
 															startDay.getSelectPeriod().getDay(),
 															startHour.getSelHour().getHours(),
 															startHour.getSelHour().getMinutes(),
 															0);
-		
+
 		return startTime;
 	}
 	
 	public GregorianCalendar getStopTime()
 	{
+		
+		
 		GregorianCalendar stopTime = new GregorianCalendar(stopDay.getSelectPeriod().getYear(),
-														   stopDay.getSelectPeriod().getMonth(),
+														   stopDay.getSelectPeriod().getMonth() - 1,
 														   stopDay.getSelectPeriod().getDay(),
 														   stopHour.getSelHour().getHours(),
 														   stopHour.getSelHour().getMinutes(),

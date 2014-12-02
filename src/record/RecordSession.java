@@ -34,10 +34,11 @@ public class RecordSession {
 	
 	public RecordSession(int mode, GregorianCalendar start, GregorianCalendar stop,
 						 int fileLength, int fs, int gain, int impedance) {
+		
 		this.mode = mode;
 		
-		this.startSes = start;
-		this.stopSes = stop;
+		this.startSes = (GregorianCalendar)start.clone();
+		this.stopSes = (GregorianCalendar)stop.clone();
 		this.fileLength = fileLength;
 		this.fs = fs;
 		this.gain = gain;
@@ -54,10 +55,13 @@ public class RecordSession {
 	
 	public RecordSession(int mode, GregorianCalendar start, GregorianCalendar stop,
 			 int fileLength, int fs, int gain, int impedance, int recPeriod, int pausePeriod) {
+		
 		this.mode = mode;
 		
-		this.startSes = start;
-		this.stopSes = stop;
+		this.startSes = (GregorianCalendar)start.clone();
+		this.stopSes = (GregorianCalendar)stop.clone();
+		//this.startSes = start;
+		//this.stopSes = stop;
 		this.fileLength = fileLength;
 		this.fs = fs;
 		this.gain = gain;
@@ -104,13 +108,13 @@ public class RecordSession {
 	public String toString() {
 		return "mode: " + this.mode + ", " 
 			   + "start: " + this.startSes.get(Calendar.YEAR) 	+ "-"
-			   + this.startSes.get(Calendar.MONTH) 				+ "-"
+			   + (this.startSes.get(Calendar.MONTH)+1)  		+ "-"
 			   + this.startSes.get(Calendar.DAY_OF_MONTH) 		+ " "
 			   + this.startSes.get(Calendar.HOUR_OF_DAY) 		+ ":"
 			   + this.startSes.get(Calendar.MINUTE) 			+ ":"
 			   + this.startSes.get(Calendar.SECOND) 			+ ", " 
 			   + "stop: " + this.stopSes.get(Calendar.YEAR) 	+ "-"
-		  	   + this.stopSes.get(Calendar.MONTH) 				+ "-"
+		  	   + (this.stopSes.get(Calendar.MONTH)+1)			+ "-"
 			   + this.stopSes.get(Calendar.DAY_OF_MONTH) 		+ " "
 		   	   + this.stopSes.get(Calendar.HOUR_OF_DAY) 		+ ":"
 		  	   + this.stopSes.get(Calendar.MINUTE) 				+ ":"
@@ -168,11 +172,11 @@ public class RecordSession {
 			this.records.add(new RecPeriodical((GregorianCalendar)increment.clone(), recPeriod));
 			
 			System.out.print("------ ");
-			System.out.print(increment.get(Calendar.YEAR) + "-"
-					   	   + increment.get(Calendar.MONTH) + "-"
-					   	   + increment.get(Calendar.DAY_OF_MONTH) + " "
-					   	   + increment.get(Calendar.HOUR_OF_DAY) + ":"
-					   	   + increment.get(Calendar.MINUTE) + ":"
+			System.out.print(increment.get(Calendar.YEAR) 			+ "-"
+					   	   + (increment.get(Calendar.MONTH)+1) 		+ "-"
+					   	   + increment.get(Calendar.DAY_OF_MONTH) 	+ " "
+					   	   + increment.get(Calendar.HOUR_OF_DAY) 	+ ":"
+					   	   + increment.get(Calendar.MINUTE) 		+ ":"
 					   	   + increment.get(Calendar.SECOND));
 			System.out.println(" (" + recPeriod + ")");
 			
@@ -187,14 +191,14 @@ public class RecordSession {
 			
 			System.out.print("------ ");
 			System.out.print(this.startSes.get(Calendar.YEAR) + "-"
-					   	   + this.startSes.get(Calendar.MONTH) + "-"
+					   	   + (this.startSes.get(Calendar.MONTH)+1) + "-"
 					   	   + this.startSes.get(Calendar.DAY_OF_MONTH) + " "
 					   	   + this.startSes.get(Calendar.HOUR_OF_DAY) + ":"
 					   	   + this.startSes.get(Calendar.MINUTE) + ":"
 					   	   + this.startSes.get(Calendar.SECOND));
 			
 			System.out.println(" " + this.stopSes.get(Calendar.YEAR) + "-"
-				   	   + this.stopSes.get(Calendar.MONTH) + "-"
+				   	   + (this.stopSes.get(Calendar.MONTH)+1) + "-"
 				   	   + this.stopSes.get(Calendar.DAY_OF_MONTH) + " "
 				   	   + this.stopSes.get(Calendar.HOUR_OF_DAY) + ":"
 				   	   + this.stopSes.get(Calendar.MINUTE) + ":"

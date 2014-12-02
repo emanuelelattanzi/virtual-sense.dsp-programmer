@@ -5,8 +5,9 @@ import java.util.GregorianCalendar;
 
 public class RecPeriodical extends Record{
 	private GregorianCalendar startRec;
-	private int length;				// Length of registration expressed in seconds
+	private int length;						// Length of registration expressed in seconds
 
+	
 	public RecPeriodical(GregorianCalendar startRec, int length) {	
 		this.startRec = startRec;
 		this.length = length;
@@ -34,7 +35,7 @@ public class RecPeriodical extends Record{
 	
 	public String toString() {
 		return this.startRec.get(Calendar.YEAR) 		+ "-" +
-			   this.startRec.get(Calendar.MONTH) 		+ "-" +
+			   (this.startRec.get(Calendar.MONTH)+1)	+ "-" +
 			   this.startRec.get(Calendar.DAY_OF_MONTH) + " " +
 			   this.startRec.get(Calendar.HOUR_OF_DAY) 	+ ":" +
 			   this.startRec.get(Calendar.MINUTE) 		+ ":" +
@@ -46,7 +47,7 @@ public class RecPeriodical extends Record{
 		String ret = "";
 		
 		ret+=Record.swapBytes(String.format("%04X ", this.startRec.get(Calendar.DAY_OF_MONTH)).toUpperCase());        
-		ret+=Record.swapBytes(String.format("%04X ", this.startRec.get(Calendar.MONTH)).toUpperCase());
+		ret+=Record.swapBytes(String.format("%04X ", (this.startRec.get(Calendar.MONTH)+1)).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", this.startRec.get(Calendar.YEAR)-2000).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", this.startRec.get(Calendar.HOUR_OF_DAY)).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", this.startRec.get(Calendar.MINUTE)).toUpperCase());
@@ -65,7 +66,7 @@ public class RecPeriodical extends Record{
 		GregorianCalendar stopRec = this.getStop();
 		
 		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.DAY_OF_MONTH)).toUpperCase());        
-		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.MONTH)).toUpperCase());
+		ret+=Record.swapBytes(String.format("%04X ", (stopRec.get(Calendar.MONTH)+1)).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.YEAR)-2000).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.HOUR_OF_DAY)).toUpperCase());
 		ret+=Record.swapBytes(String.format("%04X ", stopRec.get(Calendar.MINUTE)).toUpperCase());

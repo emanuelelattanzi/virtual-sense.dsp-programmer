@@ -124,7 +124,7 @@ public class TimerMenu extends JPanel {
 						GregorianCalendar startTime = panelTimer3.getStartTime();
 						GregorianCalendar stopTime = panelTimer3.getStopTime();
 						GregorianCalendar today = (GregorianCalendar)Calendar.getInstance(TimeZone.getDefault());
-						today.add(Calendar.MONTH, 1);
+						//today.add(Calendar.MONTH, 1);
 						int fileLength = panelTimer3.getModePanel().getFileLength();
 						int fs = audioMenu.getFs();
 						int gain =  audioMenu.getGain();
@@ -134,10 +134,11 @@ public class TimerMenu extends JPanel {
 						System.out.println("met-gain: " + gain);
 						System.out.println("met-impedance: " + impedance);
 						
+						System.out.println("met-today: " + today);
 						System.out.println("met-startTime: " + startTime);
 						System.out.println("met-stopTime: " + stopTime);
-						System.out.println("met-stopTime: " + today);
-								
+
+						
 						if((stopTime.after(startTime) || stopTime.equals(startTime)) &&
 						   (startTime.after(today) || startTime.equals(today))) {
 							
@@ -149,6 +150,9 @@ public class TimerMenu extends JPanel {
 	
 							b = managePanel3();
 						}*/
+						
+						//System.out.println("dop-startTime: " + startTime);
+						//System.out.println("dop-stopTime: " + stopTime);
 					}
 					break;
 									
